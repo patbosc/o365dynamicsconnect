@@ -14,14 +14,16 @@ namespace UnifiedApiConnect.Controllers
     public class MessageController : Controller
     {
         // Take data and put into Index view.
-        public ActionResult Index(SendMessageResponse sendMessageResponse, UserInfo userInfo)
+        public async Task<ActionResult> Index(SendMessageResponse sendMessageResponse, UserInfo userInfo)
         {
             EnsureUser(ref userInfo);
+
+            var textElements = await UnifiedApiHelper.GetTextElements((string) Session[SessionKeys.Login.AccessToken]);
 
             ViewBag.UserInfo = userInfo;
             ViewBag.MessageResponse = sendMessageResponse;
 
-            return View();
+            return View(textElements);
         }
 
         

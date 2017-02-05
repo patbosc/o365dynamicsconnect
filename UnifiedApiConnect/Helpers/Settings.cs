@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See full license at the bottom of this file. 
 
+using System;
 using System.Configuration;
 
 namespace UnifiedApiConnect.Helpers
@@ -11,12 +12,15 @@ namespace UnifiedApiConnect.Helpers
 
         public static string AzureADAuthority = @"https://login.microsoftonline.com/common";
         public static string LogoutAuthority = @"https://login.microsoftonline.com/common/oauth2/logout?post_logout_redirect_uri=";
-        public static string O365UnifiedAPIResource = @"https://graph.microsoft.com/";
+        //public static string O365UnifiedAPIResource = @"https://graph.microsoft.com/";
+        public static string O365UnifiedAPIResource = @"https://easyschriftwechselnext.crm4.dynamics.com/";
 
         public static string SendMessageUrl = @"https://graph.microsoft.com/v1.0/me/microsoft.graph.sendmail";
         public static string GetMeUrl = @"https://graph.microsoft.com/v1.0/me";
         public static string MessageBody => ConfigurationManager.AppSettings["MessageBody"];
         public static string MessageSubject => ConfigurationManager.AppSettings["MessageSubject"];
+        public static Uri GetCrmMeUrl => new Uri(@"https://easyschriftwechselnext.crm4.dynamics.com/api/data/v8.0/WhoAmI");
+        public static Uri GetTextElementsUrl => new Uri(@"https://easyschriftwechselnext.crm4.dynamics.com/api/data/v8.0/ibm_textbausteins");
     }
 }
 

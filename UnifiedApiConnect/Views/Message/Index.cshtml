@@ -1,68 +1,114 @@
 ﻿<!-- Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See full license at the bottom of this file. -->
-
+@model List<UnifiedApiConnect.Models.TextElements>
 @{
     UnifiedApiConnect.Models.UserInfo userInfo = ViewBag.UserInfo;
     UnifiedApiConnect.Models.SendMessageResponse messageResponse = ViewBag.MessageResponse;
 }
 
-<h2>Messages</h2>
+<h2>Text Building Blocks</h2>
 <br />
-
-<form>
     <p>
     <p>
-        You're now connected to Office 365!  Click <b>Send Mail</b> to send a message from your Office 365 account using unified API.  
+        You are now connected with O365
     </p>
-        <b>To:</b> @Html.EditorFor(m => userInfo.Address, new { htmlAttributes = new { style = "Width:350px" } })
-    </p>
-    <br />
-
-    <p>
-        <button formaction="@Url.Content("~/Message/SendMessageSubmit")">Send Mail</button>
-    </p>
-   
-</form>
-
+    <div class="btn-group-vertical">
+        @foreach (var item in Model)
+        {
+            @*<h5>@item.Category</h5>*@
+            @*<li>@item.Title</li>*@
+            @*<div>@Html.Raw(item.Text);</div>*@
+            <button type="button" class="btn btn-primary" value="@item.Text" onclick="doAction(this.value)">@item.Title</button>
+        }
+    </div>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Information</th>
+            <th>Value</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="info">
+            <td>User:</td>
+            <td>@userInfo.UserId</td>
+        </tr>
+        <tr class="info">
+            <td>BusinessUnit:</td>
+            <td>@userInfo.BusinessUnitId</td>
+        </tr>
+        <tr>
+            <td>Organization:</td>
+            <td>@userInfo.OrganizationId</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 <br />
-
-<p>
-    @{  if (messageResponse.Status == UnifiedApiConnect.Models.SendMessageStatusEnum.Sent)
-        {
-        <p>Successfully sent an email to @userInfo.Address!</p>
-        }
-        else if (messageResponse.Status == UnifiedApiConnect.Models.SendMessageStatusEnum.Fail)
-        {
-            <p>Your message was NOT sent</p>
-            <p>@messageResponse.StatusMessage</p>
-        }
-    }
-</p>
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("Office 365 Connect Sample", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            </div>
-            <div class="navbar-collapse collapse">
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            @Html.ActionLink("Dynamics CRM", "Index", "Home", new {area = ""}, new {@class = "navbar-brand"})
+        </div>
+        <div class="navbar-collapse collapse">
 
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="@Url.Action("Logout", "Home", null, Request.Url.Scheme)"><i class="ms-Icon ms-Icon--x"></i><b>x</b> Disconnect</li>
-                </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="@Url.Action("Logout", "Home", null, Request.Url.Scheme)"><i class="ms-Icon ms-Icon--x"></i><b>x</b> Disconnect</li>
+            </ul>
 
 
-            </div>
         </div>
     </div>
-    
-    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
-    <script src="~/Scripts/bootstrap.min.js"></script>
+</div>
+
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
 </body>
+
+<script>
+    (function () {
+        "use strict";
+
+        // The initialize function must be run each time a new page is loaded
+        Office.initialize = function (reason) {
+            $(document).ready(function () {
+                app.initialize();
+                // wire up event handler
+                $("#addContentHellowWorld").click(onAddContentHellowWorld);
+            });
+        };
+
+        function onAddContentHellowWorld() {
+            Office.context.document.setSelectedDataAsync("Hello World!", testForSuccess);
+        }
+
+
+
+
+    })();
+
+    function doAction(value) {
+        // Don't really have anything to set...just show the value
+        console.log(value);
+        Office.context.document.setSelectedDataAsync(value, { coercionType: "html" }, testForSuccess);
+    }
+
+    function testForSuccess(asyncResult) {
+        if (asyncResult.status === Office.AsyncResultStatus.Failed) {
+            app.showNotification('Error', asyncResult.error.message);
+        }
+    }
+</script>
+
 </html>
+
+
 
 <!--
 O365-ASPNETMVC-Unified-API-Connect, https://github.com/OfficeDev/

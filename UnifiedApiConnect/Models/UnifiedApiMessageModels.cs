@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See full license at the bottom of this file. 
 
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace UnifiedApiConnect.Models
 {
@@ -46,8 +47,22 @@ namespace UnifiedApiConnect.Models
     {
         public string Name { get; set; }
         public string Address { get; set; }
+        public string BusinessUnitId { get; set; }
+        public string UserId { get; set; }
+        public string OrganizationId { get; set; }
     }
-    
+
+    public class TextElements
+    {
+        [JsonProperty("ibm_content")]
+        public string Text { get; set; }
+
+        [JsonProperty("ibm_name")]
+        public string Title { get; set; }
+
+        [JsonProperty("ibm_category")]
+        public string Category { get; set; }
+    }
 }
 
 //********************************************************* 

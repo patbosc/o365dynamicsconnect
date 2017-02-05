@@ -1,5 +1,8 @@
 ﻿// Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See full license at the bottom of this file. 
 
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net;
@@ -22,7 +25,8 @@ namespace UnifiedApiConnect.Helpers
 
             using (var client = new HttpClient())
             {
-                using (var request = new HttpRequestMessage(HttpMethod.Get, Settings.GetMeUrl))
+                //using (var request = new HttpRequestMessage(HttpMethod.Get, Settings.GetMeUrl))
+                using (var request = new HttpRequestMessage(HttpMethod.Get, Settings.GetCrmMeUrl))
                 {
                     request.Headers.Accept.Add(Json);
                     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
@@ -32,15 +36,54 @@ namespace UnifiedApiConnect.Helpers
                         if (response.StatusCode == HttpStatusCode.OK)
                         {
                             var json = JObject.Parse(await response.Content.ReadAsStringAsync());
-                            myInfo.Name = json?["displayName"]?.ToString();
-                            myInfo.Address = json?["mail"]?.ToString().Trim().Replace(" ", string.Empty);
-                            
+                            myInfo.BusinessUnitId = json?["BusinessUnitId"]?.ToString();
+                            myInfo.UserId = json?["UserId"]?.ToString().Trim().Replace(" ", string.Empty);
+                            myInfo.OrganizationId = json?["OrganizationId"]?.ToString().Trim().Replace(" ", string.Empty);
                         }
                     }
                 }
             }
 
             return myInfo;
+        }
+
+        public static async Task<List<TextElements>> GetTextElements(string accessToken)
+        {
+            List<TextElements> myTextElements = new List<TextElements>();
+            using (var client = new HttpClient())
+            {
+                using (var request = new HttpRequestMessage(HttpMethod.Get, Settings.GetTextElementsUrl))
+                {
+                    request.Headers.Accept.Add(Json);
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                    using (var response = await client.SendAsync(request))
+                    {
+                        if (response.StatusCode == HttpStatusCode.OK)
+                        {
+                            var json = JObject.Parse(await response.Content.ReadAsStringAsync());
+                            myTextElements = GetJson(json);
+                        }
+                    }
+                }
+            }
+            return myTextElements;
+        }
+
+        public static List<TextElements> GetJson(JObject json)
+        {
+            var items = new List<TextElements>();
+
+            var array = json;
+
+            items = ((JArray)array["value"]).Select(x => new TextElements
+            {
+                Text = (string)x["ibm_content"],
+                Title = (string)x["ibm_name"],
+                Category = (string)x["ibm_category"]
+            }).ToList();
+
+            return items;
         }
 
         // Construct and send the message that the logged in user wants to send.
